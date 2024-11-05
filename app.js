@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const TablesInfoService = require('./tablesInfo');
@@ -6,9 +8,7 @@ const db = require('./db');
 
 const port = process.env.PORT || 3000;
 
-// Allow CORS from all origins
-app.use(cors({ origin: '*' }));
-
+app.use(cors());
 app.use(express.json());
 
 const tablesInfoService = new TablesInfoService(process.env.DATABASE_URL);
