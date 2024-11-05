@@ -14,9 +14,14 @@ class TablesInfoService {
       WHERE schemaname != 'information_schema' 
       AND tablename !~ '^pg_';
     `;
-    const result = await this.pool.query(query);
-    console.log('Tables fetched:', result.rows.map(row => row.tablename));
-    return result;
+    try {
+      const result = await this.pool.query(query);
+      console.log('Tables fetched:', result.rows.map(row => row.tablename));
+      return result;
+    } catch (error) {
+      console.error('Error fetching all table names:', error);
+      throw error;
+    }
   }
 
   async getColumnDetails(tableName) {
@@ -25,9 +30,14 @@ class TablesInfoService {
       FROM information_schema.columns 
       WHERE table_name = $1;
     `;
-    const result = await this.pool.query(query, [tableName]);
-    console.log(`Columns fetched for ${tableName}:`, result.rows);
-    return result;
+    try {
+      const result = await this.pool.query(query, [tableName]);
+      console.log(`Columns fetched for ${tableName}:`, result.rows);
+      return result;
+    } catch (error) {
+      console.error(`Error fetching columns for table ${tableName}:`, error);
+      throw error;
+    }
   }
 
   async fetchTablesAndColumns() {
@@ -37,7 +47,7 @@ class TablesInfoService {
       const tables = tablesResult.rows.map(row => row.tablename);
 
       const tablesInfo = await Promise.all(
-        tables.map(async tableName => {
+        tables.map(async (tableName) => {
           console.log(`Fetching columns for table: ${tableName}`);
           const columnsResult = await this.getColumnDetails(tableName);
           const columns = columnsResult.rows.reduce((acc, curr) => {
