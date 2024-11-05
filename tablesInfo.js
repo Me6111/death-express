@@ -1,5 +1,3 @@
-// C:\Users\user\Desktop\projects\death-express\tablesInfo.js
-
 const { Pool } = require('pg');
 
 class TablesInfoService {
@@ -13,35 +11,45 @@ class TablesInfoService {
     const query = `
       SELECT tablename 
       FROM pg_catalog.pg_tables 
-      WHERE schemaname!= 'information_schema' 
-      AND tablename!~ '^pg_'`;
-    return await this.pool.query(query);
+      WHERE schemaname != 'information_schema' 
+      AND tablename !~ '^pg_';
+    `;
+    const result = await this.pool.query(query);
+    console.log('Tables fetched:', result.rows.map(row => row.tablename));
+    return result;
   }
 
   async getColumnDetails(tableName) {
     const query = `
       SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = $1`;
-    return await this.pool.query(query, [tableName]);
+      WHERE table_name = $1;
+    `;
+    const result = await this.pool.query(query, [tableName]);
+    console.log(`Columns fetched for ${tableName}:`, result.rows);
+    return result;
   }
 
   async fetchTablesAndColumns() {
     try {
+      console.log('Fetching tables and columns...');
       const tablesResult = await this.getAllTableNames();
       const tables = tablesResult.rows.map(row => row.tablename);
 
       const tablesInfo = await Promise.all(
         tables.map(async tableName => {
+          console.log(`Fetching columns for table: ${tableName}`);
           const columnsResult = await this.getColumnDetails(tableName);
           const columns = columnsResult.rows.reduce((acc, curr) => {
             acc[curr.column_name] = curr.data_type;
             return acc;
           }, {});
+          console.log(`Columns fetched for ${tableName}:`, columns);
           return { tableName, columns };
         })
       );
 
+      console.log('All tables and columns fetched successfully.');
       return tablesInfo;
     } catch (error) {
       console.error('Error fetching tables and columns:', error);
