@@ -1,23 +1,22 @@
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 
 class TablesInfoService {
   constructor(connectionString) {
-    this.pool = new Pool({
-      connectionString: connectionString,
+    this.connection = mysql.createConnection({
+      host: connectionString.host,
+      user: connectionString.user,
+      password: connectionString.password,
+      database: connectionString.database,
     });
   }
 
   async getAllTableNames() {
-    const query = `
-      SELECT tablename 
-      FROM pg_catalog.pg_tables 
-      WHERE schemaname != 'information_schema' 
-      AND tablename !~ '^pg_';
-    `;
+    const query = 'SHOW TABLES';
     try {
-      const result = await this.pool.query(query);
-      console.log('Tables fetched:', result.rows.map(row => row.tablename));
-      return result;
+      const [rows] = await this.connection.execute(query);
+      const tables = rows.map(row => row.Tables_in_[0]);
+      console.log('Tables fetched:', tables);
+      return tables;
     } catch (error) {
       console.error('Error fetching all table names:', error);
       throw error;
@@ -25,15 +24,15 @@ class TablesInfoService {
   }
 
   async getColumnDetails(tableName) {
-    const query = `
-      SELECT column_name, data_type 
-      FROM information_schema.columns 
-      WHERE table_name = $1;
-    `;
+    const query = 'DESCRIBE ?';
     try {
-      const result = await this.pool.query(query, [tableName]);
-      console.log(`Columns fetched for ${tableName}:`, result.rows);
-      return result;
+      const [rows] = await this.connection.execute(query, [tableName]);
+      const columns = rows.map(column => ({
+        column_name: column.Field,
+        data_type: column.Type,
+      }));
+      console.log(`Columns fetched for ${tableName}:`, columns);
+      return columns;
     } catch (error) {
       console.error(`Error fetching columns for table ${tableName}:`, error);
       throw error;
@@ -44,18 +43,13 @@ class TablesInfoService {
     try {
       console.log('Fetching tables and columns...');
       const tablesResult = await this.getAllTableNames();
-      const tables = tablesResult.rows.map(row => row.tablename);
+      const tables = tablesResult;
 
       const tablesInfo = await Promise.all(
         tables.map(async (tableName) => {
           console.log(`Fetching columns for table: ${tableName}`);
           const columnsResult = await this.getColumnDetails(tableName);
-          const columns = columnsResult.rows.reduce((acc, curr) => {
-            acc[curr.column_name] = curr.data_type;
-            return acc;
-          }, {});
-          console.log(`Columns fetched for ${tableName}:`, columns);
-          return { tableName, columns };
+          return { tableName, columns: columnsResult };
         })
       );
 
