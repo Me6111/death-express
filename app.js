@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const Albums = require('./albums'); // Import the Albums class
+const Albums = require('./albums.js'); // Import the Albums class
 
 const app = express();
 
