@@ -27,7 +27,7 @@ app.get('/albums', async (req, res) => {
             port: process.env.DB_PORT || 3306,
         });
 
-        const [rows] = await connection.execute('SELECT * FROM ALBUMS');
+        const [rows] = await connection.execute('SELECT * FROM Albums');
         
         res.json(rows);
     } catch (error) {
