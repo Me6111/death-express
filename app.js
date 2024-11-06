@@ -24,10 +24,10 @@ app.get('/hello', (req, res) => {
 // Albums route
 app.get('/albums', async (req, res) => {
   try {
-    const tablesInfo = await Albums.getAlbums();
-    res.json(tablesInfo);
+    const getAlbums = await Albums.getAlbums();
+    res.json(getAlbums);
   } catch (error) {
-    console.error('Error fetching tables and columns:', error);
+    console.error('Error:', error);
     res.status(500).send({ message: 'Internal Server Error', details: error.message });
   }
 });
