@@ -1,20 +1,19 @@
 {
   "name": "death-express",
   "version": "1.0.0",
-  "description": "Express.js project with MySQL database",
+  "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "files": [
-    "albums.js",
-    "app.js",
-    "db.js"
-  ],
-  "engines": {
-    "node": "18.x"
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.4",
+    "pg": "^8.7.1",
+    "pg-promise": "^11.8.0"
   }
 }
