@@ -34,6 +34,14 @@ app.get('/tables-info', async (req, res) => {
   }
 });
 
+// Add CORS middleware to all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
