@@ -1,3 +1,9 @@
+
+
+// albums.js
+
+
+
 const { connectToDatabase, queryAlbums } = require('./db');
 
 async function fetchAlbums() {
