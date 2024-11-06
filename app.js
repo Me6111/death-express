@@ -1,11 +1,7 @@
-
-
 // app.js
-
-
 const express = require('express');
 const cors = require('cors');
-const albums = require('./albums'); // Corrected file path
+const albums = require('./albums');
 
 const app = express();
 
@@ -24,7 +20,7 @@ app.get('/hello', (req, res) => {
 
 app.get('/albums', async (req, res) => {
     try {
-        const albums = await Albums.fetchAlbums();
+        const albums = await albums.fetchAlbums(); // Changed Albums to albums
         res.json(albums);
     } catch (error) {
         console.error('Error fetching albums:', error);
