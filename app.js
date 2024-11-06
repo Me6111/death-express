@@ -1,6 +1,7 @@
+// app.js
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2/promise');
+const { createConnection } = require('./db');
 
 const app = express();
 
@@ -19,14 +20,7 @@ app.get('/hello', (req, res) => {
 
 app.get('/albums', async (req, res) => {
     try {
-        const connection = await mysql.createConnection({
-            host: process.env.DB_HOST || 'mysql.railway.internal',
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || 'AaBUkersWTTvBHxHEPbLhWkaJuzhbTUM',
-            database: process.env.DB_NAME || 'railway',
-            port: process.env.DB_PORT || 3306,
-        });
-
+        const connection = await createConnection();
         const [rows] = await connection.execute('SELECT * FROM Albums');
         
         res.json(rows);
