@@ -18,5 +18,11 @@
     "albums.js",
     "app.js",
     "db.js"
-  ]
+  ],
+  "engines": {
+    "node": "18.x"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  }
 }
