@@ -30,7 +30,7 @@ app.get('/tables-info', async (req, res) => {
     res.json(tablesInfo);
   } catch (error) {
     console.error('Error fetching tables and columns:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send({ message: 'Internal Server Error', details: error.message });
   }
 });
 
