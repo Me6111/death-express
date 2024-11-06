@@ -1,12 +1,7 @@
 const mysql = require('mysql2/promise');
 
-// Define connection string using environment variables
-const connectionString = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-};
+// Use the DATABASE_URL environment variable directly
+const connectionString = process.env.DATABASE_URL || 'mysql://root:AaBUkersWTTvBHxHEPbLhWkaJuzhbTUM@mysql.railway.internal:3306/railway';
 
 class TablesInfoService {
   constructor() {
