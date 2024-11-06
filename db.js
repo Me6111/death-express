@@ -24,16 +24,6 @@ async function connectToDatabase() {
   }
 }
 
-async function queryAlbums(connection) {
-  const query = 'SELECT * FROM Albums';
-  try {
-    const [rows] = await connection.execute(query);
-    console.log(`Retrieved ${rows.length} albums`);
-    return rows;
-  } catch (error) {
-    console.error('Error executing query:', error);
-    throw error;
-  }
-}
 
-module.exports = { connectToDatabase, queryAlbums };
+
+module.exports = { connectToDatabase };

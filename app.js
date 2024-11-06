@@ -1,7 +1,6 @@
 // app.js
 const express = require('express');
 const cors = require('cors');
-const albums = require('./albums');
 
 const app = express();
 
@@ -18,15 +17,7 @@ app.get('/hello', (req, res) => {
     res.send('Hello client');
 });
 
-app.get('/albums', async (req, res) => {
-    try {
-        const albums = await albums.fetchAlbums(); // Changed Albums to albums
-        res.json(albums);
-    } catch (error) {
-        console.error('Error fetching albums:', error);
-        res.status(500).send({ message: 'Internal Server Error', details: error.message });
-    }
-});
+
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
