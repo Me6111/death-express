@@ -11,14 +11,21 @@ const dbConfig = {
 };
 
 async function connectToDatabase() {
-  const connection = await mysql.createConnection(dbConfig);
-  return connection;
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('Connected to database successfully');
+    return connection;
+  } catch (error) {
+    console.error('Failed to connect to database:', error);
+    throw error;
+  }
 }
 
 async function getAlbums(connection) {
   const query = 'SELECT * FROM Albums';
   try {
     const [rows] = await connection.execute(query);
+    console.log(`Retrieved ${rows.length} albums`);
     return rows;
   } catch (error) {
     console.error('Error executing query:', error);
@@ -27,10 +34,12 @@ async function getAlbums(connection) {
 }
 
 async function fetchAlbums() {
-  const conn = await connectToDatabase();
+  let conn;
   try {
+    conn = await connectToDatabase();
     const albums = await getAlbums(conn);
     await conn.end();
+    console.log('Successfully fetched albums');
     return albums;
   } catch (error) {
     console.error('Error fetching albums:', error);
