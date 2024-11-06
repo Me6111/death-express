@@ -1,25 +1,35 @@
-// C:\Users\user\Desktop\projects\death-express\db.js
-
-// C:\Users\user\Desktop\projects\death-express\db.js
-
+// db.js
 const mysql = require('mysql2/promise');
 
-// Use the DATABASE_URL environment variable directly
-const connectionString = process.env.DATABASE_URL || 'mysql://root:AaBUkersWTTvBHxHEPbLhWkaJuzhbTUM@mysql.railway.internal:3306/railway';
-
-const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: connectionString.split(':')[2],
-  user: connectionString.split(':')[3].split('@')[0],
-  password: connectionString.split(':')[4].split(':')[0],
-  database: connectionString.split(':')[4].split('/')[0],
-  port: parseInt(connectionString.split(':')[3].split(':')[1]),
-});
-
-const db = {
-  query: (text, params, callback) => {
-    return pool.query(text, params, callback);
-  },
+const dbConfig = {
+  host: process.env.DB_HOST || 'mysql.railway.internal',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'AaBUkersWTTvBHxHEPbLhWkaJuzhbTUM',
+  database: process.env.DB_NAME || 'railway',
+  port: process.env.DB_PORT || 3306,
 };
 
-module.exports = { mysqlConnection: pool, pgPool: null };
+async function connectToDatabase() {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('Connected to database successfully');
+    return connection;
+  } catch (error) {
+    console.error('Failed to connect to database:', error);
+    throw error;
+  }
+}
+
+async function queryAlbums(connection) {
+  const query = 'SELECT * FROM Albums';
+  try {
+    const [rows] = await connection.execute(query);
+    console.log(`Retrieved ${rows.length} albums`);
+    return rows;
+  } catch (error) {
+    console.error('Error executing query:', error);
+    throw error;
+  }
+}
+
+module.exports = { connectToDatabase, queryAlbums };

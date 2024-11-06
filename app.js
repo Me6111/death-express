@@ -1,5 +1,4 @@
 // app.js
-
 const express = require('express');
 const cors = require('cors');
 const Albums = require('./albums'); // Import the Albums class
