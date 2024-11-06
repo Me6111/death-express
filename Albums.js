@@ -1,3 +1,5 @@
+// albums.js
+
 const { mysqlConnection } = require('./db');
 
 class Albums {
