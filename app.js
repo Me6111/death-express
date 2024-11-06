@@ -2,6 +2,8 @@
 
 const express = require('express');
 const cors = require('cors');
+const Albums = require('./albums'); // Import the Albums class
+
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -24,10 +26,10 @@ app.get('/hello', (req, res) => {
 // Albums route
 app.get('/albums', async (req, res) => {
   try {
-    const getAlbums = await Albums.getAlbums();
-    res.json(getAlbums);
+    const albums = await Albums.fetchAlbums(); // Call the exported function
+    res.json(albums);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching albums:', error);
     res.status(500).send({ message: 'Internal Server Error', details: error.message });
   }
 });
