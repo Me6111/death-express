@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const TablesInfoService = require('./tablesInfo');
 const app = express();
-const db = require('./db');
 
 const port = process.env.PORT || 3000;
 
@@ -11,7 +9,27 @@ app.use(cors({ origin: '*' }));
 
 app.use(express.json());
 
-const Albums = new Albums(process.env.DATABASE_URL);
+// Define Albums class
+class Albums {
+  constructor(dbUrl) {
+    this.dbUrl = dbUrl;
+    this.connection = mysql.createConnection(this.dbUrl);
+  }
+
+  async getAlbums() {
+    const query = 'SELECT * FROM Albums';
+    try {
+      const [rows] = await this.connection.execute(query);
+      return rows;
+    } catch (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+  }
+}
+
+// Initialize Albums instance
+const AlbumsInstance = new Albums(process.env.DATABASE_URL);
 
 // Root path route
 app.get('/', (req, res) => {
@@ -23,10 +41,10 @@ app.get('/hello', (req, res) => {
   res.send('Hello client');
 });
 
-// Tables-info route
+// Albums route
 app.get('/albums', async (req, res) => {
   try {
-    const tablesInfo = await Albums.getAlbums();
+    const tablesInfo = await AlbumsInstance.getAlbums();
     res.json(tablesInfo);
   } catch (error) {
     console.error('Error fetching tables and columns:', error);
