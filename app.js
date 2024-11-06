@@ -11,7 +11,7 @@ app.use(cors({ origin: '*' }));
 
 app.use(express.json());
 
-const tablesInfoService = new TablesInfoService(process.env.DATABASE_URL);
+const Albums = new Albums(process.env.DATABASE_URL);
 
 // Root path route
 app.get('/', (req, res) => {
@@ -24,9 +24,9 @@ app.get('/hello', (req, res) => {
 });
 
 // Tables-info route
-app.get('/tables-info', async (req, res) => {
+app.get('/albums', async (req, res) => {
   try {
-    const tablesInfo = await tablesInfoService.fetchTablesAndColumns();
+    const tablesInfo = await Albums.getAlbums();
     res.json(tablesInfo);
   } catch (error) {
     console.error('Error fetching tables and columns:', error);

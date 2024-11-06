@@ -1,11 +1,10 @@
-
 // C:\Users\user\Desktop\projects\death-express\db.js
 
-
 const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 
-// Assuming you have a.env file or another method to securely store your database credentials
-const connectionString = process.env.DATABASE_URL;
+// Use the DATABASE_URL environment variable directly
+const connectionString = process.env.DATABASE_URL || 'mysql://root:AaBUkersWTTvBHxHEPbLhWkaJuzhbTUM@mysql.railway.internal:3306/railway';
 
 const pool = new Pool({
   connectionString: connectionString,
@@ -17,4 +16,4 @@ const db = {
   },
 };
 
-module.exports = db;
+module.exports = { mysqlConnection: mysql.createConnection(connectionString), pgPool: pool };
