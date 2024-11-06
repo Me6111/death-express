@@ -1,13 +1,16 @@
 const mysql = require('mysql2/promise');
 
+// Define connection string using environment variables
+const connectionString = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+};
+
 class TablesInfoService {
-  constructor(connectionString) {
-    this.connection = mysql.createConnection({
-      host: connectionString.host,
-      user: connectionString.user,
-      password: connectionString.password,
-      database: connectionString.database,
-    });
+  constructor() {
+    this.connection = mysql.createConnection(connectionString);
   }
 
   async getAllTableNames() {
