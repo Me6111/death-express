@@ -11,12 +11,18 @@ app.use(express.json());
 
 let connection;
 
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Global Error:', err);
+    res.status(500).json({ message: 'Internal Server Error', details: err.message });
+});
+
 app.get('/', (req, res) => {
     res.send('Hello from the root path!');
 });
 
 app.get('/hello', (req, res) => {
-    res.send('Hello client');
+    res.send('Hello clients');
 });
 
 app.get('/albums', async (req, res) => {
@@ -24,14 +30,15 @@ app.get('/albums', async (req, res) => {
         if (!connection) {
             connection = await createConnection();
         }
-        const [rows] = await connection.execute('SELECT * FROM Albums');
+
+        const [rows] = await connection.execute('SELECT * FROM Albums LIMIT 100');
         
         res.json(rows);
     } catch (error) {
         console.error('Error fetching albums:', error);
-        res.status(500).json({ message: 'Internal Server Error', details: error.message });
+        res.status(500).json({ message: 'Database Error', details: error.message });
     } finally {
-        if (connection) {
+        if (connection && !connection.destroyed) {
             await connection.end();
             connection = null;
         }
@@ -60,7 +67,7 @@ app.post('/execute_qq', async (req, res) => {
 
     } catch (error) {
         console.error('Error executing query:', error);
-        res.status(500).json({ message: 'Internal Server Error', details: error.message });
+        res.status(500).json({ message: 'Query Execution Error', details: error.message });
     } finally {
         if (connection) {
             await connection.end();
@@ -69,12 +76,18 @@ app.post('/execute_qq', async (req, res) => {
     }
 });
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
+// Initialize database connection on app start
+async function initDB() {
+    try {
+        connection = await createConnection();
+        console.log('Database connection established successfully');
+    } catch (err) {
+        console.error('Failed to establish database connection:', err);
+        process.exit(1);
+    }
+}
+
+initDB();
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
