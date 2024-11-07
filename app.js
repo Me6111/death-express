@@ -32,6 +32,39 @@ app.get('/albums', async (req, res) => {
     }
 });
 
+
+
+
+
+
+app.post('/execute_qq', async (req, res) => {
+    try {
+        const connection = await createConnection();
+        const query = req.body.query;
+        
+        // Execute the query
+        const [results] = await connection.execute(query);
+
+        // Handle different types of queries
+        if (query.toLowerCase().includes('create table') || 
+            query.toLowerCase().includes('drop table')) {
+            // For CREATE TABLE or DROP TABLE queries
+            res.json({ success: true, message: 'Table operation completed successfully' });
+        } else {
+            // For SELECT queries
+            res.json(results);
+        }
+
+    } catch (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ message: 'Internal Server Error', details: error.message });
+    } finally {
+        await connection.end();
+    }
+});
+
+
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
