@@ -31,6 +31,29 @@ app.get('/leprosytxt', (req, res) => {
   res.type('text/plain').send(data);
 });
 
+app.get('/leprosytxt2', async (req, res) => {
+    try {
+        const data = fs.readFileSync('leprosy.txt', 'utf8');
+
+        if (!connection) {
+            connection = await createConnection();
+        }
+
+        await connection.execute('UPDATE Songs SET Lyrics = ? WHERE Album = 2 AND ID = 1', [data]);
+
+        res.json({ message: 'Lyrics updated successfully' });
+    } catch (error) {
+        console.error('Error updating lyrics:', error);
+        res.status(500).json({ message: 'Error updating lyrics', details: error.message });
+    } finally {
+        if (connection && !connection.destroyed) {
+            await connection.end();
+            connection = null;
+        }
+    }
+});
+
+
 app.get('/albums', async (req, res) => {
     try {
         if (!connection) {
