@@ -23,18 +23,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hello', (req, res) => {
-    res.send('Hello clients');
+    res.send('Hello client');
 });
 
 app.get('/leprosytxt', (req, res) => {
-    fs.readFile('leprosy.txt', 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            res.status(500).json({ message: 'File not found' });
-        } else {
-            res.send(data);
-        }
-    });
+  const data = fs.readFileSync('leprosy.txt', 'utf8');
+  res.type('text/plain').send(data);
 });
 
 app.get('/albums', async (req, res) => {
