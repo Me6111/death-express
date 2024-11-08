@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { createConnection } = require('./db');
+const fs = require('fs');
 
 const app = express();
 
@@ -22,7 +23,18 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hello', (req, res) => {
-    res.send('Hello client');
+    res.send('Hello clients');
+});
+
+app.get('/leprosytxt', (req, res) => {
+    fs.readFile('leprosy.txt', 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading file:', err);
+            res.status(500).json({ message: 'File not found' });
+        } else {
+            res.send(data);
+        }
+    });
 });
 
 app.get('/albums', async (req, res) => {
