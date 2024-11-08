@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hello', (req, res) => {
-    res.send('Hello clients');
+    res.send('Hello client');
 });
 
 app.get('/albums', async (req, res) => {
@@ -75,19 +75,6 @@ app.post('/execute_qq', async (req, res) => {
         }
     }
 });
-
-// Initialize database connection on app start
-async function initDB() {
-    try {
-        connection = await createConnection();
-        console.log('Database connection established successfully');
-    } catch (err) {
-        console.error('Failed to establish database connection:', err);
-        process.exit(1);
-    }
-}
-
-initDB();
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
