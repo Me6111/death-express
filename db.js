@@ -11,4 +11,23 @@ async function createConnection() {
     });
 }
 
-module.exports = { createConnection };
+async function executeQQ(query) {
+    let connection;
+    try {
+        if (!connection) {
+            connection = await createConnection();
+        }
+        
+        const [results] = await connection.execute(query);
+        return results;
+    } catch (error) {
+        console.error('Error executing query:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            await connection.end();
+        }
+    }
+}
+
+module.exports = { createConnection, executeQQ };

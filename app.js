@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { createConnection } = require('./db');
+const { createConnection, executeQQ } = require('./db');
 const fs = require('fs');
 
 const app = express();
@@ -134,34 +134,30 @@ app.get('/albums', async (req, res) => {
 
 app.post('/execute_qq', async (req, res) => {
     try {
-        if (!connection) {
-            connection = await createConnection();
-        }
-        const query = req.body.query;
-        
-        // Execute the query
-        const [results] = await connection.execute(query);
-
-        // Handle different types of queries
-        if (query.toLowerCase().includes('create table') || 
-            query.toLowerCase().includes('drop table')) {
-            // For CREATE TABLE or DROP TABLE queries
-            res.json({ success: true, message: 'Table operation completed successfully' });
-        } else {
-            // For SELECT queries
-            res.json(results);
-        }
-
+      const query = req.body.query;
+  
+      // Execute the query
+      const results = await executeQQ(query);
+  
+      // Handle different types of queries
+      if (query.toLowerCase().includes('create table') || 
+          query.toLowerCase().includes('drop table')) {
+        // For CREATE TABLE or DROP TABLE queries
+        res.json({ success: true, message: 'Table operation completed successfully' });
+      } else {
+        // For SELECT queries
+        res.json(results);
+      }
+  
     } catch (error) {
-        console.error('Error executing query:', error);
-        res.status(500).json({ message: 'Query Execution Error', details: error.message });
+      console.error('Error executing query:', error);
+      res.status(500).json({ message: 'Query Execution Error', details: error.message });
     } finally {
-        if (connection) {
-            await connection.end();
-            connection = null;
-        }
+      if (pool) {
+        await pool.end();
+      }
     }
-});
+  });
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
