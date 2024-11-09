@@ -39,6 +39,11 @@ app.get('/printlistoffilesfromsongsfolder', async (req, res) => {
 
         const songsDir = path.join(__dirname, 'songs');
 
+        if (!connection) {
+            connection = await createConnection();
+        }
+
+        let Album = 2;
         let fileNumbers = [];
         let allFiles = [];
         let filesInDatabase = [];
@@ -50,8 +55,8 @@ app.get('/printlistoffilesfromsongsfolder', async (req, res) => {
             fileNumbers.push(number);
             allFiles.push(file);
 
-            // Check if the file exists in the database
-            connection.execute('SELECT * FROM Songs WHERE ID = ? AND Name = ?', [number, name])
+            // Execute the query
+            connection.execute('SELECT * FROM Songs WHERE Album = ? AND ID = ?', [Album, number])
                 .then(([rows]) => {
                     if (rows.length > 0) {
                         filesInDatabase.push(file);
@@ -76,8 +81,14 @@ app.get('/printlistoffilesfromsongsfolder', async (req, res) => {
     } catch (error) {
         console.error('Error listing files:', error);
         res.status(500).json({ message: 'Failed to list files' });
+    } finally {
+        if (connection && !connection.destroyed) {
+            await connection.end();
+            connection = null;
+        }
     }
 });
+
 app.get('/insertlyricsfromtxt', async (req, res) => {
     try {
         const data = fs.readFileSync('Leprosy.txt', 'utf8');
