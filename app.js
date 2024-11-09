@@ -27,13 +27,60 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/leprosytxt', (req, res) => {
-  const data = fs.readFileSync('leprosy.txt', 'utf8');
+  const data = fs.readFileSync('Leprosy.txt', 'utf8');
   res.type('text/plain').send(data);
 });
 
-app.get('/leprosytxt2', async (req, res) => {
+
+app.get('/printlistoffilesfromsongsfolder', async (req, res) => {
     try {
-        const data = fs.readFileSync('leprosy.txt', 'utf8');
+        const fs = require('fs');
+        const path = require('path');
+
+        const songsDir = path.join(__dirname, 'songs');
+
+        let fileNumbers = [];
+        let allFiles = [];
+        let filesInDatabase = [];
+        let filesNotInDatabase = [];
+
+        fs.readdirSync(songsDir).forEach(file => {
+            const number = file.split(' ')[0];
+            const name = file.split(' ').slice(1).join(' ');
+            fileNumbers.push(number);
+            allFiles.push(file);
+
+            // Check if the file exists in the database
+            connection.execute('SELECT * FROM Songs WHERE ID = ? AND Name = ?', [number, name])
+                .then(([rows]) => {
+                    if (rows.length > 0) {
+                        filesInDatabase.push(file);
+                    } else {
+                        filesNotInDatabase.push(file);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking database:', error);
+                });
+        });
+
+        // Wait for all database queries to complete
+        await Promise.allSettled(promises);
+
+        res.json({
+            fileNumbers,
+            allFiles,
+            filesInDatabase,
+            filesNotInDatabase
+        });
+    } catch (error) {
+        console.error('Error listing files:', error);
+        res.status(500).json({ message: 'Failed to list files' });
+    }
+});
+app.get('/insertlyricsfromtxt', async (req, res) => {
+    try {
+        const data = fs.readFileSync('Leprosy.txt', 'utf8');
 
         if (!connection) {
             connection = await createConnection();
