@@ -11,7 +11,7 @@ async function createConnection() {
     });
 }
 
-async function executeQQ(query) {
+async function execute_qq(query) {
     let connection;
     try {
         if (!connection) {
@@ -30,4 +30,4 @@ async function executeQQ(query) {
     }
 }
 
-module.exports = { createConnection, executeQQ };
+module.exports = { createConnection, execute_qq };
