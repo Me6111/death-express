@@ -1,20 +1,15 @@
-
-
-//app.js
-
 const express = require('express');
-const cors = require('cors'); // Import the cors middleware
+const cors = require('cors');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Use the PORT environment variable if set
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000' // Replace with your client's origin
-})); // Add the cors middleware to allow cross-origin requests from your client's origin
-
-app.use(express.json()); // Parse incoming JSON data
-app.use(express.urlencoded({ extended: true })); // Parse incoming URL-encoded data
+  origin: '*' // Allow requests from any origin (adjust as needed)
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
@@ -28,10 +23,6 @@ app.get('/hello', (req, res) => {
 // ... other routes
 
 // Start server
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-});
-
-server.on('error', (error) => {
-  console.error(`Error starting server: ${error}`);
 });
